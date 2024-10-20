@@ -128,7 +128,7 @@ String HAMqttEntity::componentToStr(Component component){
         case Component::NUMBER: return "number";
         case Component::SCENE: return "scene";
         case Component::SELECT: return "select";
-        case Component::SENSOR: return "lock";
+        case Component::SENSOR: return "sensor";
         case Component::SIREN: return "siren";
         case Component::SWITCH: return "switch";
         case Component::UPDATE: return "update";
