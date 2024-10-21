@@ -6,7 +6,7 @@ HAMqttDevice::HAMqttDevice(String name){
     _mac_adress = WiFi.macAddress();
     _mac_adress.replace(":", "-");
 
-    _identifier = name + _mac_adress.substring(12);
+    _identifier = name + _mac_adress.substring(11);
     _identifier.replace(' ', '_');
     _identifier.toLowerCase();
 }

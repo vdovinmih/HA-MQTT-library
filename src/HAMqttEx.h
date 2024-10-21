@@ -1,151 +1,46 @@
-#ifndef class_HA_MQTT_device
-#define class_HA_MQTT_device
+#ifndef class_HA_MQTT_deviceEx
+#define class_HA_MQTT_deviceEx
 
-#ifndef HA_TOPIC
-#define HA_TOPIC "homeassistant/"
-#endif
-
-#ifdef ESP8266
-  #include <ESP8266WiFi.h>
-#else // for ESP32
-  #include <WiFiClient.h>
-#endif
-
-#include "EspMQTTClient.h"
-#include <vector>
-
-struct Dict{
-    String key;
-    String value;
-};
-String serializerDict(std::vector<Dict> dictionnary, bool enclose);
-String serializerList(std::vector<String> array, bool enclose);
-String serializerKeyValue(String key, String value);
-
-class HAMqttDevice {
-    public:
-        /**
-         * @brief Construct the device object. Managing or sending
-         * availability will only be available with Client provided.
-         *
-         * @param device_name The name of your device. It should not contains
-         * accentuated letters.
-        */
-        HAMqttDevice(String device_name);
-        /**
-         * @brief Construct the device with the Client object. It allows
-         * the use of manageAvailability and sendAvailable methods.
-         *
-         * @param device_name The name of your device. It should not contains
-         * accentuated letters.
-         * @param client The MQTT client object.
-        */
-        HAMqttDevice(String device_name, EspMQTTClient& client);
-
-        /**
-         * @brief Set the client object for the device.
-         * 
-         * @param client The MQTT client object.
-        */
-        void setClient(EspMQTTClient& client);
-
-        /**
-         * @brief Add a custom config key value pair that will be used when
-         * sending the config payload to MQTT. See available device config
-         * here: https://www.home-assistant.io/integrations/sensor.mqtt/#device
-         * Device configs are common whatever entity type (sensor, switch,
-         * button, fan etc.) you are setting up.
-         *
-         * @param key name of the config option.
-         * @param value value of the config option.
-        */
-        void addConfig(const String &key, const String &value);
-        /**
-         * @brief Parse the config options into a string.
-         *
-         * @return serialised JSON config.
-        */
-        String getConfigPayload();
-
-        /**
-         * @brief get device name.
-        */
-        String getName();
-        /**
-         * @brief get device identifier. It is constructed as follow:
-         * [device_name]-[last MAC adress characters]
-        */
-        String getIdentifier();
-        /**
-         * @brief get device availability topic. It is constructed as
-         * follow: homeassistant/[device identifier]/status.
-         * 
-         * You can change the "homeassistant/" discovery topic by
-         * defining HA_TOPIC and chaning the value is HA.
-         * https://www.home-assistant.io/integrations/mqtt/#discovery-topic
-         * 
-        */
-        String getAvailabilityTopic();
-
-        /**
-         * @brief will send an available payload every n seconds.
-         * 
-         * @param keepAliveSecond number of seconds to wait before sending
-         * a new available message.
-        */
-        void manageAvailability(uint16_t keepAliveSecond);
-        /**
-         * @brief send an available payload at the device availabality topic.
-        */
-        void sendAvailable();
-
-        EspMQTTClient* getClient();
-
-    private:
-        EspMQTTClient* _client;
-        String _name;
-        String _identifier;
-        String _mac_adress;
-
-        long lastAvailabilityMillis = 0;
-
-        std::vector<Dict> _config;
-};
-
-class HAMqttEntity {
+class HAMqttEntityEx {
     public:
         // see full list here: https://www.home-assistant.io/integrations/#search/mqtt
         enum Component{
             ALARM_CONTROL_PANEL,
-            BINARY_SENSOR,
-            BUTTON,
-            CAMERA,
-            COVER,
-            DEVICE_TRACKER,
-            DEVICE_TRIGGER,
-            EVENT,
+            BINARY_SENSOR, BUTTON,
+            CAMERA, COVER,
+            DEVICE_TRACKER, DEVICE_TRIGGER,
+            EVENT, 
             FAN,
             HUMIDIFIER,
             IMAGE,
             HVAC,
-            LAWN_MOWER,
-            LIGHT,
-            LOCK,
-            NOTIFY,
-            NUMBER,
-            SCENE,
-            SELECT,
-            SENSOR,
-            SIREN,
-            SWITCH,
+            LAWN_MOWER, LIGHT, LOCK,
+            NOTIFY, NUMBER,
+            SCENE, SELECT, SENSOR, SIREN, SWITCH,
             UPDATE,
-            TAG_SCANER,
-            TEXT,
-            VACUUM,
-            VALVE,
+            TAG_SCANER, TEXT,
+            VACUUM, VALVE,
             WATER_HEATER
         };
 
+        const char* component2str [28] = {
+            "ALARM_CONTROL_PANEL",
+            "BINARY_SENSOR", "BUTTON",
+            "CAMERA", "COVER",
+            "DEVICE_TRACKER", "DEVICE_TRIGGER",
+            "EVENT", 
+            "FAN",
+            "HUMIDIFIER",
+            "IMAGE",
+            "HVAC",
+            "LAWN_MOWER", "LIGHT", "LOCK",
+            "NOTIFY", "NUMBER",
+            "SCENE", "SELECT", "SENSOR", "SIREN", "SWITCH",
+            "UPDATE",
+            "TAG_SCANER", "TEXT",
+            "VACUUM", "VALVE",
+            "WATER_HEATER"
+        };
 
         /**
          * @brief Construct the entity object. Sending availability will only
@@ -161,22 +56,22 @@ class HAMqttEntity {
          * If you don't see yours in this list, create an issue
          * on my github https://github.com/MarcBresson/HA-MQTT.
         */
-        HAMqttEntity();
-        HAMqttEntity(HAMqttDevice& device, String name, Component component);
+        HAMqttEntityEx();
+        HAMqttEntityEx(HAMqttDevice& device, String name, Component component);
 
         /**
          * @brief Set device. To be used with the empty constructor.
          *
          * @param device The device object.
         */
-        void setDevice(HAMqttDevice& device);
+        HAMqttEntityEx& setDevice(HAMqttDevice& device);
         
         /**
          * @brief Set entity's name. To be used with the empty constructor.
          *
          * @param name The entity name.
         */
-        void setName(String name);
+        HAMqttEntityEx& setName(String name);
 
         /**
          * @brief Set the entity's component type. To be used with the empty constructor.
@@ -189,14 +84,14 @@ class HAMqttEntity {
          * If you don't see yours in this list, create an issue
          * on my github https://github.com/MarcBresson/HA-MQTT.
         */
-        void setComponent(Component component);
+        HAMqttEntityEx& setComponent(Component component);
 
         /**
          * @brief Initialize the entity by computing its identifier.
          * Must be called once entity's device and name are set.
          * To be used with the empty constructor.
         */
-        void init();
+        HAMqttEntityEx& init();
 
         HAMqttDevice* getDevice();
 
@@ -257,12 +152,12 @@ class HAMqttEntity {
          * entity. 
          * https://www.home-assistant.io/integrations/button.mqtt/#command_topic
         */
-        void addCommandTopic();
+        HAMqttEntityEx& addCommandTopic();
         /**
          * @brief Add topic where this entity will report its state to home assistant. 
          * https://www.home-assistant.io/integrations/switch.mqtt/#state_topic
         */
-        void addStateTopic();
+        HAMqttEntityEx& addStateTopic();
 
         String getTopic(bool relative, String suffix);
 
@@ -275,7 +170,7 @@ class HAMqttEntity {
          * @param key name of the config option.
          * @param value value of the config option.
         */
-        void addConfig(const String &key, const String &value);
+        HAMqttEntityEx& addConfig(const String &key, const String &value);
         /**
          * @brief Parse the config options of the entity and the device
          * into a string.
@@ -287,7 +182,7 @@ class HAMqttEntity {
         /**
          * @brief send an available payload at the entity availabality topic.
         */
-        void sendAvailable();
+        HAMqttEntityEx& sendAvailable();
 
         /**
          * @brief return the device's client.
@@ -302,8 +197,6 @@ class HAMqttEntity {
 
         std::vector<Dict> _config;
 
-
         Component _component;
-        static String componentToStr(Component component);
 };
 #endif
