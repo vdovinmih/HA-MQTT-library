@@ -124,10 +124,8 @@ class HAMqttEntityEx {
          * will construct the topic with the base topic prepended. Otherwise,
          * it will prepend "~" that HA automatically interprets with the
          * base topic.
-         * 
-         * @param relative whether to include "~" or full base topic.
         */
-        String getDiscoveryTopic(bool relative = false);
+        String getDiscoveryTopic();
         /**
          * @brief get entity command topic. If relative is false,
          * will construct the topic with the base topic prepended. Otherwise,

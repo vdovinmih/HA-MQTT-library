@@ -57,7 +57,7 @@ String HAMqttEntityEx::getBaseTopic(){
 String HAMqttEntityEx::getAvailabilityTopic(bool relative){
     return getTopic(relative, + "/status");
 }
-String HAMqttEntityEx::getDiscoveryTopic(bool relative){
+String HAMqttEntityEx::getDiscoveryTopic(){
     // must conform to https://www.home-assistant.io/integrations/mqtt/#discovery-topic
     // <discovery_prefix>/<component>/[<node_id>/]<object_id>/config
     const String ha_topic = HA_TOPIC;
