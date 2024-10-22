@@ -30,6 +30,7 @@ HAMqttEntityEx& HAMqttEntityEx::init(){
     _identifier = _device->getIdentifier() + "-" + _name;
     _identifier.replace(' ', '_');
     _identifier.toLowerCase();
+    _config.push_back({"value_template", "{{ value_json.state }}"});
     return *this;
 }
 
@@ -52,7 +53,7 @@ HAMqttEntityEx& HAMqttEntityEx::addStateTopic(){
 String HAMqttEntityEx::getBaseTopic(){
     const String ha_topic = HA_TOPIC;
     //return ha_topic + component2str[_component] + "/" + _identifier;
-    return ha_topic + _device->getIdentifier() + "/" + _name;
+    return toLowerCase(ha_topic + _device->getIdentifier() + "/" + _name);
 }
 String HAMqttEntityEx::getAvailabilityTopic(bool relative){
     return getTopic(relative, + "/status");
@@ -61,8 +62,7 @@ String HAMqttEntityEx::getDiscoveryTopic(){
     // must conform to https://www.home-assistant.io/integrations/mqtt/#discovery-topic
     // <discovery_prefix>/<component>/[<node_id>/]<object_id>/config
     const String ha_topic = HA_TOPIC;
-    return ha_topic + component2str[_component] + "/" + _identifier + "/config";
-    //return getTopic(relative, "/config");
+    return toLowerCase(ha_topic + component2str[_component] + "/" + _identifier + "/config");
 }
 String HAMqttEntityEx::getCommandTopic(bool relative){
     return getTopic(relative, "/set");
@@ -82,7 +82,7 @@ HAMqttEntityEx& HAMqttEntityEx::addConfig(const String &key, const String &value
     return *this;
 }
 
-String HAMqttEntityEx::getConfigPayload(){
+String HAMqttEntityEx::getDiscoveryPayload(){
     String s = "{";
     s += serializerKeyValue("name", _name);
     s += ",";
@@ -116,4 +116,8 @@ EspMQTTClient* HAMqttEntityEx::getClient(){
 
 HAMqttDevice* HAMqttEntityEx::getDevice(){
     return _device;
+}
+String HAMqttEntityEx::toLowerCase(String str){
+    str.toLowerCase();
+    return str;
 }
