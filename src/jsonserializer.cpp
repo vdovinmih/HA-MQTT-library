@@ -60,7 +60,7 @@ String serializerKeyValue(String key, String value){
     key_json = quote(key);
 
     String value_json;
-    if(value[0] == '{' || value[0] == '(' || value[0] == '[' || value == "false" || value == "true"){
+    if((value[0] == '{' && value[1] != '{') || value[0] == '(' || value[0] == '[' || value == "false" || value == "true"){
         value_json = value;
     } else {
         value_json = quote(value);
