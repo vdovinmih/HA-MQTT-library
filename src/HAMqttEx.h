@@ -175,7 +175,7 @@ class HAMqttEntityEx {
          *
          * @return serialised JSON config.
         */
-        String getConfigPayload();
+        String getDiscoveryPayload();
 
         /**
          * @brief send an available payload at the entity availabality topic.
@@ -196,5 +196,7 @@ class HAMqttEntityEx {
         std::vector<Dict> _config;
 
         Component _component;
+
+        static String toLowerCase(String str);
 };
 #endif
