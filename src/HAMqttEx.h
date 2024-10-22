@@ -1,7 +1,10 @@
 #ifndef class_HA_MQTT_deviceEx
 #define class_HA_MQTT_deviceEx
 
+class HAMqttSubEntityEx;
+
 class HAMqttEntityEx {
+    friend class HAMqttSubEntityEx;
     public:
         // see full list here: https://www.home-assistant.io/integrations/#search/mqtt
         enum Component{
@@ -145,6 +148,8 @@ class HAMqttEntityEx {
         */
         String getStateTopic(bool relative = false);
 
+        String getTopic(bool relative, String suffix);
+
         /**
          * @brief Add topic where home assistant will publish commands for the
          * entity. 
@@ -156,8 +161,6 @@ class HAMqttEntityEx {
          * https://www.home-assistant.io/integrations/switch.mqtt/#state_topic
         */
         HAMqttEntityEx& addStateTopic();
-
-        String getTopic(bool relative, String suffix);
 
         /**
          * @brief Add a custom config key value pair that will be used when
@@ -199,4 +202,82 @@ class HAMqttEntityEx {
 
         static String toLowerCase(String str);
 };
+
+class HAMqttSubEntityEx : public HAMqttEntityEx {
+    public:
+        //using HAMqttEntityEx::HAMqttEntityEx;
+        HAMqttSubEntityEx();
+        HAMqttSubEntityEx(HAMqttEntityEx& device, String name, Component component);
+
+        HAMqttSubEntityEx& init();
+
+        /**
+         * @brief get entity identifier. It is constructed as follow:
+         * [device identifier]-[entity name]
+        */
+        String getIdentifier();
+        
+        String getFullName();
+
+        HAMqttSubEntityEx& setDevice(HAMqttEntityEx& device);
+
+        /**
+         * @brief get entity base topic. It is constructed as
+         * follow: homeassistant/[component name]/[device identifier].
+        */
+        String getBaseTopic();
+        /**
+         * @brief get entity availability topic. If relative is false,
+         * will construct the topic with the base topic prepended. Otherwise,
+         * it will prepend "~" that HA automatically interprets with the
+         * base topic.
+         * 
+         * @param relative whether to include "~" or full base topic.
+        */
+        String getAvailabilityTopic(bool relative = false);
+        /**
+         * @brief get entity discovery topic. If relative is false,
+         * will construct the topic with the base topic prepended. Otherwise,
+         * it will prepend "~" that HA automatically interprets with the
+         * base topic.
+        */
+        String getDiscoveryTopic();
+        /**
+         * @brief get entity command topic. If relative is false,
+         * will construct the topic with the base topic prepended. Otherwise,
+         * it will prepend "~" that HA automatically interprets with the
+         * base topic.
+         * 
+         * @param relative whether to include "~" or full base topic.
+        */
+        String getCommandTopic(bool relative = false);
+        /**
+         * @brief get entity state topic. If relative is false,
+         * will construct the topic with the base topic prepended. Otherwise,
+         * it will prepend "~" that HA automatically interprets with the
+         * base topic.
+         * 
+         * @param relative whether to include "~" or full base topic.
+        */
+        String getStateTopic(bool relative = false);
+
+        String getTopic(bool relative, String suffix);
+
+        /**
+         * @brief Add topic where home assistant will publish commands for the
+         * entity. 
+         * https://www.home-assistant.io/integrations/button.mqtt/#command_topic
+        */
+        HAMqttSubEntityEx& addCommandTopic();
+
+        String getDiscoveryPayload();
+    private:
+        HAMqttEntityEx* _device;
+        String _identifier;
+
+};
+
+
+
+
 #endif

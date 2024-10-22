@@ -55,21 +55,26 @@ String HAMqttEntityEx::getBaseTopic(){
     //return ha_topic + component2str[_component] + "/" + _identifier;
     return toLowerCase(ha_topic + _device->getIdentifier() + "/" + _name);
 }
+
 String HAMqttEntityEx::getAvailabilityTopic(bool relative){
     return getTopic(relative, + "/status");
 }
+
 String HAMqttEntityEx::getDiscoveryTopic(){
     // must conform to https://www.home-assistant.io/integrations/mqtt/#discovery-topic
     // <discovery_prefix>/<component>/[<node_id>/]<object_id>/config
     const String ha_topic = HA_TOPIC;
     return toLowerCase(ha_topic + component2str[_component] + "/" + _identifier + "/config");
 }
+
 String HAMqttEntityEx::getCommandTopic(bool relative){
     return getTopic(relative, "/set");
 }
+
 String HAMqttEntityEx::getStateTopic(bool relative){
     return getTopic(relative, "/state");
 }
+
 String HAMqttEntityEx::getTopic(bool relative, String suffix){
     if(relative){
         return "~" + suffix;
