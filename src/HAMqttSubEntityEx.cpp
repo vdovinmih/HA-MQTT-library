@@ -95,7 +95,7 @@ String HAMqttSubEntityEx::getDiscoveryPayload(){
 
     std::vector<String> availability;
     availability.push_back("{\"topic\":\"" + _device->getDevice()->getAvailabilityTopic() + "\"}");
-    availability.push_back("{\"topic\":\"" + getAvailabilityTopic() + "\"}");
+    //availability.push_back("{\"topic\":\"" + getAvailabilityTopic() + "\"}");
     s += serializerKeyValue("availability", serializerList(availability, true));
 
     s += "}";
